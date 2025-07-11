@@ -1,0 +1,198 @@
+import React, { useState } from "react";
+
+// Dummy data for demonstration
+const dummyStudent = {
+  id: "FPK/2023/12345",
+  name: "John Doe",
+  department: "Computer Science",
+  level: "ND II",
+  dob: "2003-05-17",
+  email: "john.doe@fpk.edu.ng",
+  phone: "08012345678",
+  address: "Federal Polytechnic Kaltungo, Gombe State",
+  profilePhoto: "https://randomuser.me/api/portraits/men/24.jpg",
+  semesterResults: [
+    { semester: "First Semester 2024", gpa: "3.75", courses: [{ code: "CSC201", title: "Data Structures", grade: "A" }, { code: "MTH202", title: "Discrete Math", grade: "B+" }] },
+    { semester: "Second Semester 2024", gpa: "3.85", courses: [{ code: "CSC202", title: "Algorithms", grade: "A" }, { code: "STA201", title: "Statistics", grade: "A-" }] },
+  ],
+  schoolFees: [
+    { session: "2024/2025", amount: "₦45,000", status: "Paid", paymentDate: "2024-09-10" },
+    { session: "2023/2024", amount: "₦43,000", status: "Paid", paymentDate: "2023-09-15" },
+  ],
+  registeredCourses: [
+    { session: "2024/2025", semester: "First", courses: ["CSC301", "MTH302", "GST303"] },
+  ],
+};
+
+type Tab = "profile" | "bio" | "courses" | "results" | "fees";
+
+export default function StudentPortalApp() {
+  const [tab, setTab] = useState<Tab>("profile");
+
+  return (
+    <div style={{ fontFamily: "Arial, sans-serif", background: "#f8fafc", minHeight: "100vh" }}>
+      <header style={{ background: "#08415C", color: "#fff", padding: "1.5rem" }}>
+        <h1>Federal Polytechnic Kaltungo – Student Portal</h1>
+        <nav style={{ marginTop: "1rem" }}>
+          <button onClick={() => setTab("profile")} style={navButtonStyle(tab === "profile")}>Profile</button>
+          <button onClick={() => setTab("bio")} style={navButtonStyle(tab === "bio")}>Bio Data</button>
+          <button onClick={() => setTab("courses")} style={navButtonStyle(tab === "courses")}>Course Registration</button>
+          <button onClick={() => setTab("results")} style={navButtonStyle(tab === "results")}>Semester Results</button>
+          <button onClick={() => setTab("fees")} style={navButtonStyle(tab === "fees")}>School Fees</button>
+        </nav>
+      </header>
+      <main style={{ maxWidth: 800, margin: "2rem auto", background: "#fff", borderRadius: 10, boxShadow: "0 2px 8px #eee", padding: "2rem" }}>
+        {tab === "profile" && <ProfileSection student={dummyStudent} />}
+        {tab === "bio" && <BioDataSection student={dummyStudent} />}
+        {tab === "courses" && <CourseRegistrationSection student={dummyStudent} />}
+        {tab === "results" && <SemesterResultsSection student={dummyStudent} />}
+        {tab === "fees" && <SchoolFeesSection student={dummyStudent} />}
+      </main>
+      <footer style={{ textAlign: "center", padding: "1rem", background: "#eee", marginTop: "2rem" }}>
+        &copy; {new Date().getFullYear()} Federal Polytechnic Kaltungo – Student Portal
+      </footer>
+    </div>
+  );
+}
+
+function navButtonStyle(active: boolean) {
+  return {
+    marginRight: "1rem",
+    padding: "0.6rem 1.2rem",
+    borderRadius: "5px",
+    border: "none",
+    background: active ? "#FFC857" : "#fff",
+    color: active ? "#08415C" : "#222",
+    cursor: "pointer",
+    boxShadow: active ? "0 2px 6px #FFC85755" : "none",
+    fontWeight: active ? "bold" : "normal",
+    transition: "0.2s",
+  };
+}
+
+function ProfileSection({ student }: { student: typeof dummyStudent }) {
+  return (
+    <section>
+      <h2>Student Profile</h2>
+      <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
+        <img src={student.profilePhoto} alt="Profile" style={{ borderRadius: "50%", width: 120, height: 120, objectFit: "cover" }} />
+        <div>
+          <p><strong>Name:</strong> {student.name}</p>
+          <p><strong>Matric No:</strong> {student.id}</p>
+          <p><strong>Department:</strong> {student.department}</p>
+          <p><strong>Level:</strong> {student.level}</p>
+          <p><strong>Email:</strong> {student.email}</p>
+          <p><strong>Phone:</strong> {student.phone}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BioDataSection({ student }: { student: typeof dummyStudent }) {
+  return (
+    <section>
+      <h2>Bio Data</h2>
+      <table style={tableStyle}>
+        <tbody>
+          <tr><td>Date of Birth</td><td>{student.dob}</td></tr>
+          <tr><td>Address</td><td>{student.address}</td></tr>
+          <tr><td>Email</td><td>{student.email}</td></tr>
+          <tr><td>Phone</td><td>{student.phone}</td></tr>
+          <tr><td>Department</td><td>{student.department}</td></tr>
+          <tr><td>Level</td><td>{student.level}</td></tr>
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
+function CourseRegistrationSection({ student }: { student: typeof dummyStudent }) {
+  // Simulate available courses for registration
+  const availableCourses = ["CSC301", "CSC302", "MTH302", "GST303", "PHY304"];
+  return (
+    <section>
+      <h2>Course Registration</h2>
+      <div style={{ marginBottom: "1rem" }}>
+        <strong>Registered Courses ({student.registeredCourses[0].session}, {student.registeredCourses[0].semester} Semester):</strong>
+        <ul>
+          {student.registeredCourses[0].courses.map(course => <li key={course}>{course}</li>)}
+        </ul>
+      </div>
+      <div>
+        <strong>Available Courses for Registration:</strong>
+        <ul>
+          {availableCourses.map(course => (
+            <li key={course}>
+              <input type="checkbox" id={course} name={course} defaultChecked={student.registeredCourses[0].courses.includes(course)} disabled />{" "}
+              <label htmlFor={course}>{course}</label>
+            </li>
+          ))}
+        </ul>
+        <small style={{ color: "#888" }}>Course registration is closed for this session.</small>
+      </div>
+    </section>
+  );
+}
+
+function SemesterResultsSection({ student }: { student: typeof dummyStudent }) {
+  return (
+    <section>
+      <h2>Semester Results</h2>
+      {student.semesterResults.map(result => (
+        <div key={result.semester} style={{ marginBottom: "1.5rem", padding: "1rem", border: "1px solid #eee", borderRadius: 8 }}>
+          <h3>{result.semester}</h3>
+          <strong>GPA:</strong> {result.gpa}
+          <table style={{ ...tableStyle, marginTop: "1rem" }}>
+            <thead>
+              <tr><th>Course Code</th><th>Course Title</th><th>Grade</th></tr>
+            </thead>
+            <tbody>
+              {result.courses.map(course => (
+                <tr key={course.code}>
+                  <td>{course.code}</td>
+                  <td>{course.title}</td>
+                  <td>{course.grade}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function SchoolFeesSection({ student }: { student: typeof dummyStudent }) {
+  return (
+    <section>
+      <h2>School Fees Payment</h2>
+      <table style={tableStyle}>
+        <thead>
+          <tr><th>Session</th><th>Amount</th><th>Status</th><th>Payment Date</th></tr>
+        </thead>
+        <tbody>
+          {student.schoolFees.map(fees => (
+            <tr key={fees.session}>
+              <td>{fees.session}</td>
+              <td>{fees.amount}</td>
+              <td>{fees.status}</td>
+              <td>{fees.paymentDate}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button style={{ marginTop: "1rem", padding: "0.7rem 1.5rem", background: "#FFC857", border: "none", borderRadius: 6, fontWeight: "bold", cursor: "pointer" }} disabled>
+        Pay School Fees
+      </button>
+      <small style={{ color: "#888", display: "block", marginTop: "0.5rem" }}>All fees for current session are paid.</small>
+    </section>
+  );
+}
+
+const tableStyle: React.CSSProperties = {
+  width: "100%",
+  borderCollapse: "collapse",
+  marginTop: "1rem",
+  background: "#fafafa",
+};
